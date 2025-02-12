@@ -1,50 +1,180 @@
 #usda 1.0
 (
-    defaultPrim = "Root"
+    defaultPrim = "Orb"
     metersPerUnit = 1
     upAxis = "Y"
 )
 
-def Xform "Root"
+def Xform "Root" (
+    active = true
+)
 {
-    reorder nameChildren = ["Sphere_Left", "Sphere_Right", "GridMaterial"]
-    def Sphere "Sphere_Right" (
+    reorder nameChildren = ["Orb", "OrbMaterial"]
+    quatf xformOp:orient = (1, 0, 0, 0)
+    float3 xformOp:scale = (1, 1, 1)
+    float3 xformOp:translate = (0, 0, 0)
+    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+    def Sphere "Orb" (
         active = true
         prepend apiSchemas = ["MaterialBindingAPI"]
     )
     {
-        rel material:binding = </Root/GridMaterial/GridMaterial> (
+        reorder nameChildren = ["OrbMaterial", "Root"]
+        rel material:binding = </Root/OrbMaterial> (
             bindMaterialAs = "weakerThanDescendants"
         )
-        double radius = 0.1
+        double radius = 0.05
         quatf xformOp:orient = (1, 0, 0, 0)
         float3 xformOp:scale = (1, 1, 1)
-        float3 xformOp:translate = (0.5, 1.5, -1.5)
+        float3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def RealityKitCustomComponent "RealityKitContent_OrbComponent"
+        {
+            uniform token info:id = "RealityKitContent.OrbComponent"
+        }
     }
 
-    def Sphere "Sphere_Left" (
-        active = true
-        prepend apiSchemas = ["MaterialBindingAPI"]
-    )
+    def Material "OrbMaterial"
     {
-        rel material:binding = </Root/GridMaterial/GridMaterial> (
-            bindMaterialAs = "weakerThanDescendants"
+        float inputs:Disintergration = 0 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-838.7441, 448.01917)
+                    int stackingOrderInSubgraph = 358
+                }
+            }
         )
-        double radius = 0.1
-        quatf xformOp:orient = (1, 0, 0, 0)
-        float3 xformOp:scale = (1, 1, 1)
-        float3 xformOp:translate = (-0.5, 1.5, -1.5)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-    }
+        color3f inputs:EmissiveColor = (0, 1, 0.28175268) (
+            colorSpace = "srgb_displayp3"
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-366.39453, 3.0742188)
+                    int stackingOrderInSubgraph = 15
+                }
+            }
+        )
+        float inputs:EmissiveIntensity = 1 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-373.4375, 98.625)
+                    int stackingOrderInSubgraph = 15
+                }
+            }
+        )
+        float inputs:NoiseScale = 100 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1123.5859, 292.5039)
+                    int stackingOrderInSubgraph = 303
+                }
+            }
+        )
+        token outputs:mtlx:surface.connect = </Root/OrbMaterial/PBRSurface.outputs:out>
+        token outputs:realitykit:vertex
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (335.25, 100.5)
 
-    def "GridMaterial" (
-        active = true
-        prepend references = @Materials/GridMaterial.usda@
-    )
-    {
-        float3 xformOp:scale = (1, 1, 1)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        def Shader "PBRSurface"
+        {
+            uniform token info:id = "ND_realitykit_pbr_surfaceshader"
+            float inputs:ambientOcclusion.connect = </Root/OrbMaterial/Step.outputs:out>
+            color3f inputs:baseColor = (0, 0, 0) (
+                colorSpace = "srgb_displayp3"
+            )
+            float inputs:clearcoat
+            float3 inputs:clearcoatNormal
+            float inputs:clearcoatRoughness
+            color3f inputs:emissiveColor = (0, 1, 0.95322716) (
+                colorSpace = "srgb_displayp3"
+            )
+            color3f inputs:emissiveColor.connect = </Root/OrbMaterial/Multiply.outputs:out>
+            bool inputs:hasPremultipliedAlpha
+            float inputs:metallic
+            float3 inputs:normal
+            float inputs:opacity.connect = </Root/OrbMaterial/Step.outputs:out>
+            float inputs:opacityThreshold
+            float inputs:roughness = 0.1
+            float inputs:specular
+            token outputs:out
+            float2 ui:nodegraph:node:pos = (12.300781, 75.67578)
+            int ui:nodegraph:node:stackingOrder = 22
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+        }
+
+        def Shader "Multiply"
+        {
+            uniform token info:id = "ND_multiply_color3FA"
+            color3f inputs:in1.connect = </Root/OrbMaterial.inputs:EmissiveColor>
+            float inputs:in2.connect = </Root/OrbMaterial.inputs:EmissiveIntensity>
+            color3f outputs:out
+            float2 ui:nodegraph:node:pos = (-209.30078, 48.222656)
+            int ui:nodegraph:node:stackingOrder = 14
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+        }
+
+        def Shader "Noise3D"
+        {
+            uniform token info:id = "ND_noise3d_float"
+            float inputs:amplitude
+            float inputs:pivot
+            float3 inputs:position.connect = </Root/OrbMaterial/Multiply_1.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-780.6719, 226.45703)
+            int ui:nodegraph:node:stackingOrder = 303
+        }
+
+        def Shader "Position"
+        {
+            uniform token info:id = "ND_position_vector3"
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-1119.75, 219.8711)
+            int ui:nodegraph:node:stackingOrder = 303
+        }
+
+        def Shader "Multiply_1"
+        {
+            uniform token info:id = "ND_multiply_vector3FA"
+            float3 inputs:in1.connect = </Root/OrbMaterial/Position.outputs:out>
+            float inputs:in2.connect = </Root/OrbMaterial.inputs:NoiseScale>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-979.9375, 256.17578)
+            int ui:nodegraph:node:stackingOrder = 303
+        }
+
+        def Shader "Step"
+        {
+            uniform token info:id = "ND_realitykit_step_float"
+            float inputs:edge
+            float inputs:in.connect = </Root/OrbMaterial/Add.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-270.1836, 269.15625)
+            int ui:nodegraph:node:stackingOrder = 235
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
+        }
+
+        def Shader "Add"
+        {
+            uniform token info:id = "ND_add_float"
+            float inputs:in1.connect = </Root/OrbMaterial/Noise3D.outputs:out>
+            float inputs:in2.connect = </Root/OrbMaterial/Remap.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-466.29672, 315.07736)
+            int ui:nodegraph:node:stackingOrder = 311
+        }
+
+        def Shader "Remap"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </Root/OrbMaterial.inputs:Disintergration>
+            float inputs:inlow = 0
+            float inputs:outhigh = -1
+            float inputs:outlow = 1
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-633.2469, 474.14203)
+            int ui:nodegraph:node:stackingOrder = 354
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:inhigh"]
+        }
     }
 }
 

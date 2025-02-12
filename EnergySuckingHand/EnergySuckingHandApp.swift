@@ -6,11 +6,18 @@
 //
 
 import SwiftUI
+import RealityKitContent
 
 @main
 struct EnergySuckingHandApp: App {
 
     @State private var appModel = AppModel()
+
+    init() {
+        AttractionSystem.registerSystem()
+        OrbComponent.registerComponent()
+        EnergySuckerComponent.registerComponent()
+    }
 
     var body: some Scene {
         WindowGroup {
