@@ -176,5 +176,57 @@ def Xform "Root" (
             string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:inhigh"]
         }
     }
+
+    def Xform "ParticleEmitter" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = None (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+
+        def RealityKitComponent "VFXEmitter"
+        {
+            token info:id = "RealityKit.VFXEmitter"
+
+            def RealityKitStruct "currentState"
+            {
+                token birthDirection = "Normal"
+                token birthLocation = "Surface"
+                int64 burstCount = 200
+                double emissionDuration = 2
+                token emitterShape = "Sphere"
+                bool isEmitting = 1
+                bool isLocal = 1
+                bool isLocalFields = 1
+                bool loops = 0
+                float particleSpeed = 0
+                float3 shapeSize = (0.07, 0.07, 0.07)
+                token spawnOccasion = "OnDeath"
+
+                def RealityKitStruct "mainEmitter"
+                {
+                    float birthRate = 200
+                    token blendMode = "Alpha"
+                    float4 endColorA = (0.0013006331, 0.032195132, 1, 1)
+                    bool isLightingEnabled = 0
+                    float noiseScale = 0
+                    float noiseStrength = 0
+                    token opacityOverLife = "QuickFadeInOut"
+                    float3 radialGravityCenter = (0, 0, 0)
+                    float radialGravityStrength = 1
+                    float4 startColorA = (0, 0.90929866, 0, 1)
+                    bool useEndColor = 0
+                    bool useEndColorRange = 0
+                    bool useStartColorRange = 0
+                    float vortexStrength = 0
+                }
+
+                def RealityKitStruct "spawnedEmitter"
+                {
+                }
+            }
+        }
+    }
 }
 

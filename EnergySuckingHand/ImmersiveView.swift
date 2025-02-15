@@ -40,7 +40,7 @@ struct ImmersiveView: View {
                 rightHandEntity.addChild(energySuckerEntity)
                 content.add(rightHandEntity)
                 
-                for i in 0..<7 {
+                for i in 0..<orbColors.count {
                     let orbClone = orb.clone(recursive: true)
                     orbClone.name = "Orb_\(i)"
                     
