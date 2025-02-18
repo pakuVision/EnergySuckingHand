@@ -98,7 +98,7 @@ def Xform "Root" (
             float inputs:specular
             token outputs:out
             float2 ui:nodegraph:node:pos = (12.300781, 75.67578)
-            int ui:nodegraph:node:stackingOrder = 22
+            int ui:nodegraph:node:stackingOrder = 356
             string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["outputs:out"]
         }
 
@@ -121,7 +121,7 @@ def Xform "Root" (
             float3 inputs:position.connect = </Root/OrbMaterial/Multiply_1.outputs:out>
             float outputs:out
             float2 ui:nodegraph:node:pos = (-780.6719, 226.45703)
-            int ui:nodegraph:node:stackingOrder = 303
+            int ui:nodegraph:node:stackingOrder = 355
         }
 
         def Shader "Position"
